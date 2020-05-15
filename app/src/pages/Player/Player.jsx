@@ -67,10 +67,10 @@ function Player() {
   const router = useHistory();
   const dispatch = useDispatch();
 
-  const [selectedTabIndex, setSelectedTabIndex] = useState(0);
   const [isTracking, setIsTracking] = useState(false);
-  const [selectedDeltasPeriod, setSelectedDeltasPeriod] = useState('week');
-  const [selectedDeltasMetric, setSelectedDeltasMetric] = useState(SKILLS[0]);
+  const [selectedTabIndex, setSelectedTabIndex] = useState(0);
+  const [selectedPeriod, setSelectedPeriod] = useState('week');
+  const [selectedMetric, setSelectedMetric] = useState(SKILLS[0]);
   const [selectedMetricType, setSelectedMetricType] = useState('skilling');
   const [selectedLevelType, setSelectedLevelType] = useState('regular');
 
@@ -85,14 +85,14 @@ function Player() {
 
   const metricTypeIndex = METRIC_TYPE_OPTIONS.findIndex(o => o.value === selectedMetricType);
   const levelTypeIndex = LEVEL_TYPE_OPTIONS.findIndex(o => o.value === selectedLevelType);
-  const deltasPeriodIndex = PERIOD_SELECTOR_OPTIONS.findIndex(o => o.value === selectedDeltasPeriod);
+  const periodIndex = PERIOD_SELECTOR_OPTIONS.findIndex(o => o.value === selectedPeriod);
 
   const experienceChartData = useSelector(state =>
-    getChartData(state, id, selectedDeltasPeriod, selectedDeltasMetric, getMeasure(selectedDeltasMetric))
+    getChartData(state, id, selectedPeriod, selectedMetric, getMeasure(selectedMetric))
   );
 
   const rankChartData = useSelector(state =>
-    getChartData(state, id, selectedDeltasPeriod, selectedDeltasMetric, 'rank')
+    getChartData(state, id, selectedPeriod, selectedMetric, 'rank')
   );
 
   const trackPlayer = async () => {
@@ -127,12 +127,12 @@ function Player() {
     setSelectedTabIndex(i);
   };
 
-  const handleDeltasPeriodSelected = e => {
-    setSelectedDeltasPeriod((e && e.value) || null);
+  const handlePeriodSelected = e => {
+    setSelectedPeriod((e && e.value) || null);
   };
 
-  const handleDeltasMetricSelected = metric => {
-    setSelectedDeltasMetric(metric);
+  const handleMetricSelected = metric => {
+    setSelectedMetric(metric);
   };
 
   const handleLevelTypeSelected = e => {
@@ -143,13 +143,13 @@ function Player() {
     setSelectedMetricType((e && e.value) || null);
   };
 
-  const resetSelectedDeltasMetric = () => {
+  const resetSelectedMetric = () => {
     if (selectedMetricType === 'skilling') {
-      setSelectedDeltasMetric(SKILLS[0]);
+      setSelectedMetric(SKILLS[0]);
     } else if (selectedMetricType === 'activities') {
-      setSelectedDeltasMetric(ACTIVITIES[0]);
+      setSelectedMetric(ACTIVITIES[0]);
     } else {
-      setSelectedDeltasMetric(BOSSES[0]);
+      setSelectedMetric(BOSSES[0]);
     }
   };
 
@@ -162,8 +162,8 @@ function Player() {
   };
 
   const onTabChanged = useCallback(handleTabChanged, []);
-  const onDeltasPeriodSelected = useCallback(handleDeltasPeriodSelected, [setSelectedDeltasPeriod]);
-  const onDeltasMetricSelected = useCallback(handleDeltasMetricSelected, [setSelectedDeltasMetric]);
+  const onPeriodSelected = useCallback(handlePeriodSelected, [setSelectedPeriod]);
+  const onMetricSelected = useCallback(handleMetricSelected, [setSelectedMetric]);
   const onMetricTypeSelected = useCallback(handleMetricTypeSelected, [setSelectedMetricType]);
   const onLevelTypeSelected = useCallback(handleLevelTypeSelected, [setSelectedLevelType]);
   const onOptionSelected = useCallback(handleOptionSelected, [player]);
@@ -171,7 +171,7 @@ function Player() {
 
   // Fetch all player info on mount
   useEffect(fetchAll, [dispatch, id]);
-  useEffect(resetSelectedDeltasMetric, [selectedMetricType]);
+  useEffect(resetSelectedMetric, [selectedMetricType]);
 
   if (!player) {
     return null;
@@ -233,8 +233,8 @@ function Player() {
             <div className="col-md-6 col-lg-3">
               <Selector
                 options={PERIOD_SELECTOR_OPTIONS}
-                selectedIndex={deltasPeriodIndex}
-                onSelect={onDeltasPeriodSelected}
+                selectedIndex={periodIndex}
+                onSelect={onPeriodSelected}
               />
             </div>
           </>
@@ -298,13 +298,13 @@ function Player() {
               <LineChart datasets={rankChartData} invertYAxis />
             </div>
             <div className="col-lg-6 col-md-12">
-              <PlayerDeltasInfo deltas={deltas} period={selectedDeltasPeriod} />
+              <PlayerDeltasInfo deltas={deltas} period={selectedPeriod} />
               <PlayerDeltasTable
                 deltas={deltas}
-                period={selectedDeltasPeriod}
+                period={selectedPeriod}
                 metricType={selectedMetricType}
-                highlightedMetric={selectedDeltasMetric}
-                onMetricSelected={onDeltasMetricSelected}
+                highlightedMetric={selectedMetric}
+                onMetricSelected={onMetricSelected}
               />
             </div>
           </>
